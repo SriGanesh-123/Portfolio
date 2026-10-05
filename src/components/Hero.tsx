@@ -156,20 +156,29 @@ silver_df.write.format("delta").mode("append").save("/silver/policies")`
               </div>
 
               {/* Code Tab Switchers */}
-              <div className="terminal-tabs-row">
+              <div className="terminal-tabs-row" role="tablist" aria-label="Code examples">
                 <button
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === 'rag'}
                   onClick={() => setActiveTab('rag')}
                   className={`terminal-tab-btn ${activeTab === 'rag' ? 'active' : ''}`}
                 >
                   ⚡ KAIRIX (LangGraph + RAG)
                 </button>
                 <button
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === 'java'}
                   onClick={() => setActiveTab('java')}
                   className={`terminal-tab-btn ${activeTab === 'java' ? 'active' : ''}`}
                 >
                   ☕ Timetable (Java Servlet)
                 </button>
                 <button
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === 'spark'}
                   onClick={() => setActiveTab('spark')}
                   className={`terminal-tab-btn ${activeTab === 'spark' ? 'active' : ''}`}
                 >

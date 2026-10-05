@@ -37,6 +37,34 @@ export const App: React.FC = () => {
     localStorage.setItem('sg_palette', palette);
   }, [theme, palette]);
 
+  useEffect(() => {
+    document.documentElement.classList.add('js-motion');
+    const revealTargets = document.querySelectorAll<HTMLElement>('.hero-section, .section');
+
+    if (!('IntersectionObserver' in window)) {
+      revealTargets.forEach((target) => target.classList.add('is-visible'));
+      return () => document.documentElement.classList.remove('js-motion');
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+    );
+
+    revealTargets.forEach((target) => observer.observe(target));
+    return () => {
+      observer.disconnect();
+      document.documentElement.classList.remove('js-motion');
+    };
+  }, []);
+
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };

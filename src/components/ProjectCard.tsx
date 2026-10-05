@@ -32,7 +32,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
   };
 
   return (
-    <article className="project-card">
+    <article
+      className="project-card"
+      onMouseMove={(event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        event.currentTarget.style.setProperty('--spot-x', `${event.clientX - rect.left}px`);
+        event.currentTarget.style.setProperty('--spot-y', `${event.clientY - rect.top}px`);
+      }}
+    >
       {/* Top Meta: Number & Category */}
       <div className="project-card-top">
         <div className="project-badge-group">

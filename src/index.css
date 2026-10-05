@@ -2130,3 +2130,157 @@ code, pre {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ============================================================================
+   21. Motion Polish — cinematic reveals, depth, and pointer-aware surfaces
+   ============================================================================ */
+
+:root {
+  --motion-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-snap: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Only hide content after JS confirms the reveal system is available. */
+.js-motion .hero-section > .container,
+.js-motion .section > .container {
+  opacity: 0;
+  transform: translate3d(0, 24px, 0);
+  transition: opacity 680ms var(--motion-enter), transform 680ms var(--motion-enter);
+}
+
+.js-motion .hero-section.is-visible > .container,
+.js-motion .section.is-visible > .container {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+/* A technical grid gives the opening viewport a stronger identity without adding assets. */
+.hero-section {
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.28;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black, transparent 84%);
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  width: 520px;
+  height: 520px;
+  right: -180px;
+  top: 12%;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-glow), transparent 68%);
+  filter: blur(8px);
+  opacity: 0.7;
+  animation: hero-breathe 7s ease-in-out infinite alternate;
+}
+
+@keyframes hero-breathe {
+  from { transform: scale(0.92); opacity: 0.45; }
+  to { transform: scale(1.08); opacity: 0.78; }
+}
+
+/* Project cards feel physical on fine pointers, while remaining stable on touch devices. */
+.projects-grid {
+  perspective: 1200px;
+}
+
+.project-card {
+  --spot-x: 50%;
+  --spot-y: 20%;
+  transform: translate3d(0, 0, 0);
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 260ms var(--motion-snap), box-shadow 260ms var(--motion-snap), border-color 220ms ease-out;
+}
+
+.project-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  background: radial-gradient(circle at var(--spot-x) var(--spot-y), rgba(255, 255, 255, 0.16), transparent 32%);
+  transition: opacity 220ms ease-out;
+}
+
+.project-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .project-card:hover {
+    transform: translate3d(0, -10px, 0) rotateX(1.2deg) rotateY(-1.2deg);
+    box-shadow: var(--shadow-hover), 0 20px 46px rgba(0, 0, 0, 0.22);
+  }
+
+  .project-card:hover::after {
+    opacity: 1;
+  }
+
+  .btn:hover svg,
+  .footer-social-btn:hover svg {
+    transform: translate3d(2px, -1px, 0);
+  }
+}
+
+.btn svg,
+.footer-social-btn svg {
+  transition: transform 180ms var(--motion-snap);
+}
+
+/* Gives each section a tiny visual rhythm instead of an all-at-once entrance. */
+.section.is-visible .section-tag { transition-delay: 40ms; }
+.section.is-visible .section-title { transition-delay: 75ms; }
+.section.is-visible .section-subtitle { transition-delay: 105ms; }
+
+.terminal-code-body {
+  animation: code-in 420ms var(--motion-enter);
+}
+
+@keyframes code-in {
+  from { opacity: 0; transform: translate3d(0, 5px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .js-motion .hero-section > .container,
+  .js-motion .section > .container {
+    opacity: 1;
+    transform: none;
+  }
+
+  .project-card,
+  .project-card:hover {
+    transform: none;
+  }
+}
